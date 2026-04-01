@@ -1,75 +1,107 @@
+import mongoose from 'mongoose';
+// --- authorRoute.js ---
 import exp from 'express';
-import { register,authenticate } from '../services/authService.js';
-import { UserTypeModel } from '../models/userModel.js';
-import {ArticleModel} from '../models/articleModel.js';
+import { ArticleModel } from '../models/articleModel.js';
 import { checkAuthor } from '../middlewares/checkAuthor.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
-export const authorRoute=exp.Router();
 
+export const authorRoute = exp.Router();
 
-//register author(public route)
-authorRoute.post('/users',async(req,res)=>{
-    //get user obj from req
-    let userObj=req.body;
-    //call register
-    let newuserObj=await register({...userObj,role:"AUTHOR"});
-    //send res
-    res.status(201).json({message:"Author Created",payload:newuserObj});
-})
+// 1. Create Article (Fixed to use Token for ID)
+authorRoute.post('/articles', verifyToken("AUTHOR"), checkAuthor, async (req, res) => {
+    try {
+        // Extract author ID directly from the verified token
+        const authorIdFromToken = req.user.userId; 
+        const { title, category, content } = req.body;
 
+        const newArticle = new ArticleModel({
+            title,
+            category,
+            content,
+            author: authorIdFromToken, 
+            isArticleActive: true
+        });
 
-
-
-//create article (protected route)
-authorRoute.post('/articles',verifyToken,checkAuthor,async(req,res)=>{
-    //get article obj from req 
-    let articleObj=req.body;
-    //create article document
-    let newArticleDoc=await new ArticleModel(articleObj);
-    //save
-    let createdArticleDoc=await newArticleDoc.save();
-    res.status(201).json({message:"Article Created",payload:createdArticleDoc});   
-})
-
-
-//read all articles of author(protected route)
-authorRoute.get('/articles/:authorId',verifyToken,checkAuthor,async(req,res)=>{
-    //get author id
-    let authorId=req.params.authorId;
-    // //read articles by author which are active
-     let allArticles=await ArticleModel.find({author:authorId,isArticleActive:true}).populate("author","firstName email");
-    //send res
-    res.status(200).json({message:"Articles of Author",payload:allArticles})
-})
-
-
-//edit article(protected route)
-authorRoute.put('/articles',verifyToken,checkAuthor,async(req,res)=>{
-    //get modified article from req
-    let {articleId,title,category,content,author}=req.body;
-    //find the article
-    let articleFound=await ArticleModel.findOne({_id:articleId,author:author});
-    if(!articleFound){
-        return res.status(401).json({message:"article not found"});
+        const createdArticleDoc = await newArticle.save();
+        res.status(201).json({ message: "Article Created", payload: createdArticleDoc });
+    } catch (err) {
+        res.status(500).json({ message: "Failed to create article", error: err.message });
     }
-    //update the article
-    let updatedArticle=await ArticleModel.findByIdAndUpdate(articleId,{$set:{title,category,content}},{new:true})
-    //send res
-    res.status(200).json({message:"Article Updated",payload:updatedArticle})
-})
+});
 
+// authorRoute.js
 
+// authorRoute.js
+import mongoose from 'mongoose';
 
-//delete(soft delete)article(protected route)
-//soft delete- just make isActiveArticle false 
-//hard delete-deleting entirely from the database
-authorRoute.delete('/articles/:articleId',verifyToken,checkAuthor,async(req,res)=>{
-    //get article id from req
-    let ArticleId=req.params.articleId;
-    let deletedArticle=await ArticleModel.findOneAndUpdate({_id:ArticleId,author:req.user.userId},{$set:{isArticleActive:false}},{new:true})
-    //if article not found
-    if(!deletedArticle){
-        return res.status(401).json({message:"Article Not Found"});
+authorRoute.get('/articles/:authorId', verifyToken("AUTHOR"), checkAuthor, async (req, res) => {
+    try {
+        const { authorId } = req.params;
+
+        // 1. Validation: Stop 'undefined' or invalid IDs from hitting the DB
+        if (!authorId || authorId === 'undefined' || !mongoose.Types.ObjectId.isValid(authorId)) {
+            console.log("❌ Invalid Author ID received:", authorId);
+            return res.status(400).json({ message: "Invalid Author ID" });
+        }
+
+        // 2. Fetch: Use the Author ID to find matching articles
+        // Ensure the field name 'author' matches your Article Schema
+        const allArticles = await ArticleModel.find({ 
+            author: authorId, 
+            isArticleActive: true 
+        }).populate("author", "firstName lastName profileImageUrl");
+
+        // 3. Debugging: Check your Terminal/Console!
+        console.log(`✅ Found ${allArticles.length} articles for Author ID: ${authorId}`);
+
+        res.status(200).json({ 
+            message: "Articles fetched successfully", 
+            payload: allArticles 
+        });
+    } catch (err) {
+        console.error("❌ Backend Error:", err);
+        res.status(500).json({ message: "Server error", error: err.message });
     }
-    res.status(200).json({message:"Article Deleted",payload:deletedArticle});
-})
+});
+
+// 3. Edit Article
+authorRoute.put('/articles', verifyToken("AUTHOR"), checkAuthor, async (req, res) => {
+    try {
+        const { articleId, title, category, content } = req.body;
+        const authorId = req.user.userId; // Securely get author from token
+
+        // Ensure the article belongs to this author before updating
+        let updatedArticle = await ArticleModel.findOneAndUpdate(
+            { _id: articleId, author: authorId },
+            { $set: { title, category, content } },
+            { new: true }
+        );
+
+        if (!updatedArticle) {
+            return res.status(404).json({ message: "Article not found or unauthorized" });
+        }
+
+        res.status(200).json({ message: "Article Updated", payload: updatedArticle });
+    } catch (err) {
+        res.status(500).json({ message: "Update failed", error: err.message });
+    }
+});
+
+// 4. Soft Delete Article
+authorRoute.patch("/articles/:id/status", verifyToken("AUTHOR"), async (req, res) => {
+    const { id } = req.params;
+    const { isArticleActive } = req.body;
+
+    const article = await ArticleModel.findOneAndUpdate(
+        { _id: id, author: req.user.userId }, // Security: Must be owner
+        { isArticleActive },
+        { new: true }
+    );
+
+    if (!article) return res.status(404).json({ message: "Article not found" });
+    
+    res.status(200).json({ 
+        message: `Article ${isArticleActive ? "restored" : "deleted"}`, 
+        article 
+    });
+});

@@ -50,7 +50,11 @@ export const authenticate=async(email,password)=>{
 
     //generate token
     const token=jwt.sign({userId:user._id,
-                          role:user.role          
+                          role:user.role ,
+                          email:user.email,
+                          firstName:user.firstName,
+                          lastName:user.lastName,
+                          profileImageUrl:user.profileImageUrl
     },process.env.JWT_SECRET_KEY,{expiresIn:"1h"});
 
     const userObj=user.toObject();

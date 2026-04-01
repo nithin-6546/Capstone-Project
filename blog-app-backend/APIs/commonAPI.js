@@ -54,3 +54,10 @@ commonRoute.put("/change-password/:userId",verifyToken,async(req,res)=>{
     let updated=await UserTypeModel.findByIdAndUpdate(userId,{$set:{password:hashedPassword}})
     return res.status(200).json({message:"Password changed successfully"});
 })
+
+
+
+//page refresh
+commonRoute.get("/check-auth",verifyToken("USER","AUTHOR","ADMIN"),async(req,res)=>{
+ res.status(200).json({message:"User is authenticated",payload:req.user});   
+})
