@@ -50,7 +50,7 @@ userRoute.post(
         );
 
 // read all articles(protected route)
-userRoute.get('/users', verifyToken("USER"), checkUser, async (req, res) => {
+userRoute.get('/articles', verifyToken("USER"), checkUser, async (req, res) => {
     let allArticles = await ArticleModel.find({ isArticleActive: true })
         .populate("author", "firstName lastName profileImageUrl") 
         .populate("comments.user", "firstName lastName profileImageUrl");

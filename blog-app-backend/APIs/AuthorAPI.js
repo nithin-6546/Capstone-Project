@@ -31,8 +31,7 @@ authorRoute.post('/articles', verifyToken("AUTHOR"), checkAuthor, async (req, re
 
 // authorRoute.js
 
-// authorRoute.js
-import mongoose from 'mongoose';
+
 
 authorRoute.get('/articles/:authorId', verifyToken("AUTHOR"), checkAuthor, async (req, res) => {
     try {
@@ -47,8 +46,7 @@ authorRoute.get('/articles/:authorId', verifyToken("AUTHOR"), checkAuthor, async
         // 2. Fetch: Use the Author ID to find matching articles
         // Ensure the field name 'author' matches your Article Schema
         const allArticles = await ArticleModel.find({ 
-            author: authorId, 
-            isArticleActive: true 
+            author: authorId
         }).populate("author", "firstName lastName profileImageUrl");
 
         // 3. Debugging: Check your Terminal/Console!

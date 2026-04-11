@@ -36,9 +36,6 @@ function App() {
           element: <ProtectedRoute allowedRoles={["USER"]}><UserProfile /></ProtectedRoute>
         },
         {
-          /* NEW ROUTE: This allows users to click 'Read More' 
-             The :id is a dynamic parameter 
-          */
           path: "article/:id",
           element: <ProtectedRoute allowedRoles={["USER", "AUTHOR"]}><ArticleDetail /></ProtectedRoute>
         },

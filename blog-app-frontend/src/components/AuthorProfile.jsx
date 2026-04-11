@@ -7,70 +7,45 @@ import { toast } from 'react-hot-toast';
 function AuthorProfile() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  // Get both the user and the sync status from your store
   const currentUser = useAuth((state) => state.currentUser);
   const isAuthenticated = useAuth((state) => state.isAuthenticated);
   const navigate = useNavigate();
-
   useEffect(() => {
-    // 1. Auth Guard: If we know for sure they aren't logged in, redirect
-    if (isAuthenticated === false) {
-      setLoading(false);
-      navigate("/login");
-      return;
-    }
+  const userId = currentUser?._id || currentUser?.id;
 
-    const fetchArticles = async () => {
-      // 2. Wait for currentUser to load from the Store
-      const userId = currentUser?._id || currentUser?.id;
+  // 1. If userId is null, we are still waiting for Zustand to hydrate from LocalStorage
+  if (!userId) {
+    console.log("Waiting for user data to hydrate...");
+    return;
+  }
+
+  // 2. Define the fetch function inside to use the available userId
+  const getArticles = async () => {
+    try {
+      setLoading(true);
+      console.log("User ID ready, fetching articles for:", userId);
       
-      if (!userId) {
-        // If after 3 seconds we still have no user, stop the spinner
-        const timer = setTimeout(() => setLoading(false), 3000);
-        return () => clearTimeout(timer);
+      const res = await axios.get(
+        `http://localhost:3000/author-api/articles/${userId}`,
+        { withCredentials: true }
+      );
+
+      if (res.data && res.data.payload) {
+        setArticles(res.data.payload);
       }
-
-      try {
-        setLoading(true);
-        const res = await axios.get(
-          `http://localhost:3000/author-api/articles/${userId}`,
-          { withCredentials: true }
-        );
-
-        if (res.data && res.data.payload) {
-          setArticles(res.data.payload);
-        }
-      } catch (err) {
-        console.error("Fetch Error:", err);
+    } catch (err) {
+      if (err.response?.status !== 400) {
         toast.error("Failed to fetch articles");
-      } finally {
-        setLoading(false);
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchArticles();
-  }, [currentUser, isAuthenticated, navigate]);
-
-  // --- UI RENDER LOGIC ---
-
-  if (loading) {
-    return (
-      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
-        <div className="h-16 w-16 rounded-full border-4 border-blue-100 border-t-blue-600 animate-spin"></div>
-        <p className="mt-4 text-gray-600 font-semibold animate-pulse">Loading Workspace...</p>
-      </div>
-    );
-  }
-
-  if (!currentUser) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <p className="text-red-500 mb-4">Session data missing. Please log in again.</p>
-        <button onClick={() => navigate("/login")} className="bg-blue-600 text-white px-6 py-2 rounded-full font-bold">
-          Go to Login
-        </button>
-      </div>
-    );
-  }
+  getArticles();
+}, [currentUser]);
 
   return (
     <div className="p-8 max-w-7xl mx-auto min-h-screen bg-gray-50">
@@ -89,20 +64,30 @@ function AuthorProfile() {
         </button>
       </div>
 
-      {articles.length === 0 ? (
+      {articles.length === 0 && !loading ? (
         <div className="text-center py-24 bg-white rounded-3xl border-2 border-dashed border-gray-200">
-          <div className="text-6xl mb-4">✍️</div>
           <p className="text-gray-400 text-xl font-medium">Your portfolio is empty.</p>
-          <p className="text-gray-400 text-sm">Create your first story to see it here!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {articles.map((article) => (
-            <div key={article._id} className="bg-white p-7 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between hover:shadow-xl transition-all group">
+            <div 
+              key={article._id} 
+              className={`bg-white p-7 rounded-3xl shadow-sm border border-gray-100 flex flex-col justify-between transition-all group ${
+                article.isArticleActive === false ? "opacity-60 bg-gray-50 grayscale-[0.3]" : "hover:shadow-xl"
+              }`}
+            >
               <div>
-                <span className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-full uppercase tracking-widest border border-blue-100">
-                  {article.category}
-                </span>
+                <div className="flex justify-between">
+                  <span className="px-3 py-1 bg-blue-50 text-blue-700 text-[10px] font-black rounded-full uppercase tracking-widest">
+                    {article.category}
+                  </span>
+                  {article.isArticleActive === false && (
+                    <span className="text-[10px] bg-red-100 text-red-600 px-2 py-1 rounded font-black uppercase tracking-tighter">
+                      In Trash
+                    </span>
+                  )}
+                </div>
                 <h3 className="text-2xl font-bold text-gray-800 mt-5 mb-3 group-hover:text-blue-600 transition-colors leading-tight">
                   {article.title}
                 </h3>
@@ -118,13 +103,15 @@ function AuthorProfile() {
                       className="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover" 
                       alt="avatar" 
                     />
-                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">My Article</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter">
+                      {article.isArticleActive === false ? "Hidden" : "Live"}
+                    </span>
                  </div>
                  <button 
                    onClick={() => navigate(`/article/${article._id}`, { state: { article } })}
-                   className="bg-gray-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-600 transition-colors"
+                   className={`${article.isArticleActive === false ? 'bg-red-500' : 'bg-gray-900'} text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-600 transition-colors`}
                  >
-                   View Full
+                   {article.isArticleActive === false ? "View & Restore" : "View Full"}
                  </button>
               </div>
             </div>
