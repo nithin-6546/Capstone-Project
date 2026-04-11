@@ -19,6 +19,7 @@ app.use(exp.json())
 //add cookieparser middleware
 app.use(cookieParser());
 
+
 //connect APIs
 app.use('/user-api',userRoute)
 app.use('/author-api',authorRoute)
@@ -36,7 +37,10 @@ const connectDb=async()=> {
     }  
 }
 connectDb();
-
+ // Add this simple GET route
+app.get("/", (req, res) => {
+  res.send("<h1>Backend is running successfully!</h1><p>Connected to MongoDB: ✅</p>");
+});
 //dealing with invalid path
 app.use((req,res,next)=>{
     res.json({  message:`${req.url} is Invalid path`});
