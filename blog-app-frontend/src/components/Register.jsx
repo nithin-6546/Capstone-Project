@@ -27,7 +27,7 @@ function Register() {
       //make api request based on the role
       if(role === "USER"){
         //make api req to user-api
-        let resObj=await axios.post("http://localhost:3000/user-api/users",formData)
+        let resObj=await axios.post("https://capstone-project-rbl1.onrender.com/user-api/users",formData)
         console.log(resObj)
         if(resObj.status===201){
           navigate("/login")
@@ -37,13 +37,15 @@ function Register() {
       }
       if(role === "AUTHOR")
       {
-        let resObj=await axios.post("http://localhost:3000/author-api/users",userObj)
+        let resObj=await axios.post("https://capstone-project-rbl1.onrender.com/author-api/users",userObj)
         if(resObj.status===201){
           navigate("/login")
         }
       }
-    }catch(err){
-      setError(err.response?.data?.error || "Registration failed");
+    }catch (err) {
+      const msg = err.response?.data?.message || err.message || "Something went wrong";
+      setError(msg);
+      console.error("Full Error Object:", err);
     }finally{
       setLoading(false)
     }
