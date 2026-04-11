@@ -29,7 +29,7 @@ function EditArticle({ article, setArticle, setIsEditing }) {
     try {
       // URL is just '/articles' because your backend doesn't use /:id params
       const res = await axios.put(
-        `http://localhost:3000/author-api/articles`, 
+        ` https://capstone-project-rbl1.onrender.com/author-api/articles`, 
         finalData, 
         { withCredentials: true }
       );

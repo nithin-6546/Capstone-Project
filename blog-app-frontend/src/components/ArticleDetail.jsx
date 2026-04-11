@@ -34,7 +34,7 @@ function ArticleDetail() {
     
     try {
       const res = await axios.patch(
-        `http://localhost:3000/author-api/articles/${article._id}/status`,
+        `https://capstone-project-rbl1.onrender.com/author-api/articles/${article._id}/status`,
         { isArticleActive: newStatus },
         { withCredentials: true }
       );
@@ -61,7 +61,7 @@ function ArticleDetail() {
         comment: commentText,
       };
       const res = await axios.post(
-        "http://localhost:3000/user-api/articles",
+        "https://capstone-project-rbl1.onrender.com/user-api/articles",
         commentBody,
         { withCredentials: true }
       );

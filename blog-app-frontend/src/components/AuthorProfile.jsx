@@ -28,7 +28,7 @@ function AuthorProfile() {
       console.log("User ID ready, fetching articles for:", userId);
       
       const res = await axios.get(
-        `http://localhost:3000/author-api/articles/${userId}`,
+        ` https://capstone-project-rbl1.onrender.com/author-api/articles/${userId}`,
         { withCredentials: true }
       );
 

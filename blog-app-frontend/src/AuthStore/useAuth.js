@@ -17,7 +17,7 @@ export const useAuth = create(
           set({ loading: true, error: null });
 
           let res = await axios.post(
-            "http://localhost:3000/common-api/authenticate",
+            "https://capstone-project-rbl1.onrender.com/common-api/authenticate",
             userCredObj,
             { withCredentials: true }
           );
@@ -41,7 +41,7 @@ export const useAuth = create(
       logout: async () => {
         try {
           set({ loading: true, error: null });
-          await axios.get("http://localhost:3000/common-api/logout", {
+          await axios.get("https://capstone-project-rbl1.onrender.com/common-api/logout", {
             withCredentials: true,
           });
           set({
@@ -63,7 +63,7 @@ export const useAuth = create(
       checkAuth: async () => {
         set({ loading: true });
         try {
-          let res = await axios.get("http://localhost:3000/common-api/check-auth", {
+          let res = await axios.get("https://capstone-project-rbl1.onrender.com/common-api/check-auth", {
             withCredentials: true,
           });
           set({

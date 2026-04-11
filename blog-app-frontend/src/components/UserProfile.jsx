@@ -32,7 +32,7 @@ const fetchArticles = async () => {
   try {
     setLoading(true);
     
-    const res = await axios.get("http://localhost:3000/user-api/articles", { 
+    const res = await axios.get(" https://capstone-project-rbl1.onrender.com/user-api/articles", { 
       withCredentials: true 
     });
     
