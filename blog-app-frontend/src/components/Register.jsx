@@ -54,9 +54,17 @@ function Register() {
       return <p className='text-black text-2xl'> Loading</p>
     }
     if(error!=null){
-      return <p className='text-red-700 text-3xl'>{error.response.message}</p>
-    }
-    
+    // Just render the error string itself!
+    return (
+      <div className="text-center mt-10">
+        <p className='text-red-700 text-3xl mb-4'>{error}</p>
+        <button onClick={() => setError(null)} className="bg-blue-600 text-white p-2 rounded">
+          Try Again
+        </button>
+      </div>
+    );
+  }
+      
   ;
 
   return (
