@@ -11,8 +11,10 @@ config() //process.env
 const app=exp()
 
 //use cors middleware
-app.use(cors());
-
+app.use(cors({
+    origin: 'https://blogapp-indol-six.vercel.app/', //  frontend URL
+    credentials: true, // Allow cookies to be sent
+}));
 // add body parser middleware
 app.use(exp.json())
 
