@@ -13,7 +13,7 @@ function AuthorProfile() {
   const isAuthenticated = useAuth((state) => state.isAuthenticated);
   const navigate = useNavigate();
   useEffect(() => {
-  const userId = currentUser?._id || currentUser?.id;
+  const userId = currentUser?._id || currentUser?.userId || currentUser?.id;
   console.log("userId:", userId);
   console.log("isAuthenticated:", isAuthenticated);
   console.log("loading:", loading);
