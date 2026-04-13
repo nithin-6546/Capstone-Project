@@ -14,7 +14,9 @@ function AuthorProfile() {
   const navigate = useNavigate();
   useEffect(() => {
   const userId = currentUser?._id || currentUser?.id;
-
+  console.log("userId:", userId);
+  console.log("isAuthenticated:", isAuthenticated);
+  console.log("loading:", loading);
   // 1. If userId is null, we are still waiting for Zustand to hydrate from LocalStorage
   if (!userId) {
     console.log("Waiting for user data to hydrate...");
