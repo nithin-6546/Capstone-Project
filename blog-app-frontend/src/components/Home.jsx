@@ -125,10 +125,25 @@ function Home() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 bg-gray-50">
-        <div className="max-w-5xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-black text-gray-900 mb-4">Ready to share your story?</h2>
+     
+  <section className="py-24 bg-gray-50">
+    <div className="max-w-5xl mx-auto px-6 text-center">
+      <h2 className="text-4xl font-black text-gray-900 mb-4">Ready to share your story?</h2>
+      
+      {isAuthenticated ? (
+        // ✅ Show this when logged in
+        <div>
+          <p className="text-gray-500 mb-8 text-lg">Welcome back, {currentUser?.firstName}!</p>
+          <button
+            onClick={handleStartWriting}
+            className="bg-blue-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all active:scale-95"
+          >
+            Go to Dashboard
+          </button>
+        </div>
+      ) : (
+        // ✅ Show this when not logged in
+        <div>
           <p className="text-gray-500 mb-8 text-lg">Join as an author or reader — no experience needed.</p>
           <div className="flex justify-center gap-4 flex-wrap">
             <button
@@ -145,7 +160,9 @@ function Home() {
             </button>
           </div>
         </div>
-      </section>
+      )}
+    </div>
+  </section>
 
     </div>
   );

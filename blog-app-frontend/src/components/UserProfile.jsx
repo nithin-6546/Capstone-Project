@@ -24,9 +24,11 @@ function UserProfile() {
 
 const fetchArticles = async () => {
   // 1. Check if currentUser and _id exist before making the call
-  if (!currentUser || !currentUser._id) {
-    console.log("Waiting for user ID...");
-    return; 
+  const userId = currentUser?._id || currentUser?.userId || currentUser?.id;
+  
+  if (!currentUser || !userId) {
+    console.log("Waiting for user ID... from user profile reload");
+    return;
   }
 
   try {
