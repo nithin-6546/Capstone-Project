@@ -34,8 +34,7 @@ function AddArticle() {
     };
 
     try {
-      const BASE_URL = import.meta.env.VITE_API_URL;
-      const res = await axios.post(`${BASE_URL}/author-api/articles`, finalArticleObj, { 
+      const res = await axios.post('https://capstone-project-rbl1.onrender.com/author-api/articles', finalArticleObj, { 
         withCredentials: true 
       });
 

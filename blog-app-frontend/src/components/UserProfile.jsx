@@ -31,8 +31,8 @@ const fetchArticles = async () => {
 
   try {
     setLoading(true);
-    const BASE_URL = import.meta.env.VITE_API_URL;
-    const res = await axios.get(`${BASE_URL}/user-api/articles`, { 
+
+    const res = await axios.get('https://capstone-project-rbl1.onrender.com/user-api/articles', { 
       withCredentials: true 
     });
     

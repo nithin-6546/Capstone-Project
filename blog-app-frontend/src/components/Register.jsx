@@ -14,7 +14,6 @@ function Register() {
   let navigate = useNavigate();
 
   let onFormSubmit = async (newUser) => {
-    console.log("BASE_URL:", import.meta.env.VITE_API_URL);
     setLoading(true); // ✅ add this
     const formData = new FormData();
     let { role, profileImageUrl, ...userObj } = newUser;
@@ -24,15 +23,15 @@ function Register() {
     formData.append("profileImageUrl", profileImageUrl[0]);
 
     try {
-      const BASE_URL = import.meta.env.VITE_API_URL;
+      
       if (role === "USER") {
-        let resObj = await axios.post(`${BASE_URL}/user-api/users`, formData);
+        let resObj = await axios.post('https://capstone-project-rbl1.onrender.com/user-api/users', formData);
         if (resObj.status === 201) {
           navigate("/login");
         }
       }
       if (role === "AUTHOR") {
-        let resObj = await axios.post(`${BASE_URL}/author-api/users`, formData);
+        let resObj = await axios.post('https://capstone-project-rbl1.onrender.com/author-api/users', formData);
         if (resObj.status === 201) {
           navigate("/login");
         }

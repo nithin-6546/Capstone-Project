@@ -60,9 +60,9 @@ function ArticleDetail() {
         articleId: article._id,
         comment: commentText,
       };
-      const BASE_URL = import.meta.env.VITE_API_URL;
+
       const res = await axios.post(
-        `${BASE_URL}/user-api/articles`,
+        'https://capstone-project-rbl1.onrender.com/user-api/articles',
         commentBody,
         { withCredentials: true }
       );
