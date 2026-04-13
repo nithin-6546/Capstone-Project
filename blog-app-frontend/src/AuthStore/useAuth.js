@@ -2,6 +2,7 @@ import axios from "axios";
 import { create } from "zustand";
 import { persist } from "zustand/middleware"; // 1. Import persist middleware
 
+const BASE_URL = import.meta.env.VITE_API_URL;
 export const useAuth = create(
   persist(
     (set) => ({
@@ -15,13 +16,11 @@ export const useAuth = create(
         let { role, ...userCredObj } = userCredWithRole;
         try {
           set({ loading: true, error: null });
-
           let res = await axios.post(
-            "https://capstone-project-rbl1.onrender.com/common-api/authenticate",
+            `${BASE_URL}/common-api/authenticate`,
             userCredObj,
             { withCredentials: true }
           );
-
           set({
             loading: false,
             isAuthenticated: true,
@@ -41,7 +40,7 @@ export const useAuth = create(
       logout: async () => {
         try {
           set({ loading: true, error: null });
-          await axios.get("https://capstone-project-rbl1.onrender.com/common-api/logout", {
+          await axios.get(`${BASE_URL}/common-api/logout`, {
             withCredentials: true,
           });
           set({
@@ -49,7 +48,6 @@ export const useAuth = create(
             isAuthenticated: false,
             currentUser: null,
           });
-          // Clear storage on logout
           localStorage.removeItem("user-auth-storage");
         } catch (err) {
           set({
@@ -59,11 +57,11 @@ export const useAuth = create(
         }
       },
 
-      // SESSION CHECK (Run this in your App.jsx useEffect)
+      // SESSION CHECK
       checkAuth: async () => {
         set({ loading: true });
         try {
-          let res = await axios.get("https://capstone-project-rbl1.onrender.com/common-api/check-auth", {
+          let res = await axios.get(`${BASE_URL}/common-api/check-auth`, {
             withCredentials: true,
           });
           set({
@@ -82,11 +80,11 @@ export const useAuth = create(
       },
     }),
     {
-      name: "user-auth-storage", // 2. Unique name for the localStorage key
-      partialize: (state) => ({ 
-        currentUser: state.currentUser, 
-        isAuthenticated: state.isAuthenticated 
-      }), // 3. Only save the user data, not the loading/error states
+      name: "user-auth-storage",
+      partialize: (state) => ({
+        currentUser: state.currentUser,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 );

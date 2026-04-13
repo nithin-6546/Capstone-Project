@@ -25,9 +25,10 @@ function Register() {
     // console.log(data);
     try{
       //make api request based on the role
+      const BASE_URL = import.meta.env.VITE_API_URL;
       if(role === "USER"){
         //make api req to user-api
-        let resObj=await axios.post("https://capstone-project-rbl1.onrender.com/user-api/users",formData)
+        let resObj=await axios.post(`${BASE_URL}/user-api/users`,formData)
         console.log(resObj)
         if(resObj.status===201){
           navigate("/login")
@@ -37,7 +38,7 @@ function Register() {
       }
       if(role === "AUTHOR")
       {
-        let resObj=await axios.post("https://capstone-project-rbl1.onrender.com/author-api/users",userObj)
+        let resObj=await axios.post(`${BASE_URL}/author-api/users`,userObj)
         if(resObj.status===201){
           navigate("/login")
         }

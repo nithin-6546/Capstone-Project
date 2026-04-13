@@ -26,9 +26,9 @@ function AuthorProfile() {
     try {
       setLoading(true);
       console.log("User ID ready, fetching articles for:", userId);
-      
+       const BASE_URL = import.meta.env.VITE_API_URL;
       const res = await axios.get(
-        ` https://capstone-project-rbl1.onrender.com/author-api/articles/${userId}`,
+        `${BASE_URL}/author-api/articles/${userId}`,
         { withCredentials: true }
       );
 

@@ -11,13 +11,18 @@ import AddArticle from './components/AddArticle'
 import ProtectedRoute from './components/ProtectedRoute'
 // Import the new ArticleDetail component
 import ArticleDetail from './components/ArticleDetail' 
-
+import { useEffect } from 'react'
+import { useAuth } from './AuthStore/useAuth'
+import ErrorBoundary from './components/ErrorBoundary'
 function App() {
+  const { checkAuth } = useAuth();
 
+    
   const routerObject = createBrowserRouter([
     {
       path: "/",
       element: <RootLayout />,
+      errorElement: <ErrorBoundary />, // Global error boundary for all child routes
       children: [
         {
           path: "",
@@ -50,6 +55,10 @@ function App() {
       ]
     }
   ])
+
+  useEffect(() => {
+    checkAuth(); // runs on every refresh to validate session
+  }, []);
 
   return (
     <>
