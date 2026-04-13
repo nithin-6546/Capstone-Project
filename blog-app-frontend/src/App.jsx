@@ -14,47 +14,49 @@ import ArticleDetail from './components/ArticleDetail'
 import { useEffect } from 'react'
 import { useAuth } from './AuthStore/useAuth'
 import ErrorBoundary from './components/ErrorBoundary'
+
+const routerObject = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    errorElement: <ErrorBoundary />, // Global error boundary for all child routes
+    children: [
+      {
+        path: "",
+        element: <Home />
+      },
+      {
+        path: "register",
+        element: <Register />
+      },
+      {
+        path: "login",
+        element: <Login />
+      },
+      {
+        path: "user-profile",
+        element: <ProtectedRoute allowedRoles={["USER"]}><UserProfile /></ProtectedRoute>
+      },
+      {
+        path: "article/:id",
+        element: <ProtectedRoute allowedRoles={["USER", "AUTHOR"]}><ArticleDetail /></ProtectedRoute>
+      },
+      {
+        path: "author-profile",
+        element: <ProtectedRoute allowedRoles={["AUTHOR"]}><AuthorProfile /></ProtectedRoute>,
+      },
+      {
+        path: "add-article",
+        element: <ProtectedRoute allowedRoles={["AUTHOR"]}><AddArticle /></ProtectedRoute>
+      }
+    ]
+  }
+])
+
 function App() {
   const { checkAuth } = useAuth();
 
     
-  const routerObject = createBrowserRouter([
-    {
-      path: "/",
-      element: <RootLayout />,
-      errorElement: <ErrorBoundary />, // Global error boundary for all child routes
-      children: [
-        {
-          path: "",
-          element: <Home />
-        },
-        {
-          path: "register",
-          element: <Register />
-        },
-        {
-          path: "login",
-          element: <Login />
-        },
-        {
-          path: "user-profile",
-          element: <ProtectedRoute allowedRoles={["USER"]}><UserProfile /></ProtectedRoute>
-        },
-        {
-          path: "article/:id",
-          element: <ProtectedRoute allowedRoles={["USER", "AUTHOR"]}><ArticleDetail /></ProtectedRoute>
-        },
-        {
-          path: "author-profile",
-          element: <ProtectedRoute allowedRoles={["AUTHOR"]}><AuthorProfile /></ProtectedRoute>,
-        },
-        {
-          path: "add-article",
-          element: <ProtectedRoute allowedRoles={["AUTHOR"]}><AddArticle /></ProtectedRoute>
-        }
-      ]
-    }
-  ])
 
   useEffect(() => {
     checkAuth(); // runs on every refresh to validate session

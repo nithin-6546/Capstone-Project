@@ -1,19 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router';
 import Footer from './Footer';
 import Header from './Header';
 import { useAuth } from '../AuthStore/useAuth';
 
 function RootLayout() {
-  // Extract both checkAuth and the loading state from the store
-  const {  loading, currentUser } = useAuth();
+  const { loading, isAuthenticated } = useAuth();
 
-  
-
-  // Prevent UI flickering: 
-  // If we are currently checking the cookie but don't have a user yet, 
-  // show a loading screen instead of an empty Header.
-  if (loading && !currentUser) {
+  if (loading && !isAuthenticated) {
     return (
       <div className="min-h-screen flex flex-col justify-center items-center bg-blue-500">
         <div className="animate-spin h-12 w-12 border-4 border-white border-t-transparent rounded-full mb-4"></div>
