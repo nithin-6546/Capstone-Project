@@ -4,8 +4,46 @@ import exp from 'express';
 import { ArticleModel } from '../models/articleModel.js';
 import { checkAuthor } from '../middlewares/checkAuthor.js';
 import { verifyToken } from '../middlewares/verifyToken.js';
-
+import { register } from '../services/authService.js';
+import { upload } from '../config/multer.js';
+import { uploadToCloudinary } from '../config/cloudinaryUpload.js'; 
+import cloudinary from '../config/cloudinary.js';
 export const authorRoute = exp.Router();
+
+authorRoute.post(
+  "/users",
+  upload.single("profileImageUrl"),
+  async (req, res, next) => {
+    let cloudinaryResult;
+    try {
+      let userObj = req.body;
+
+      // Step 1: upload image to cloudinary if exists
+      if (req.file) {
+        cloudinaryResult = await uploadToCloudinary(req.file.buffer);
+      }
+
+      // Step 2: call register() with AUTHOR role
+      const newAuthorObj = await register({
+        ...userObj,
+        role: "AUTHOR",
+        profileImageUrl: cloudinaryResult?.secure_url,
+      });
+
+      res.status(201).json({
+        message: "Author created",
+        payload: newAuthorObj,
+      });
+
+    } catch (err) {
+      // Step 3: rollback cloudinary if DB save fails
+      if (cloudinaryResult?.public_id) {
+        await cloudinary.uploader.destroy(cloudinaryResult.public_id);
+      }
+      next(err);
+    }
+  }
+);
 
 // 1. Create Article (Fixed to use Token for ID)
 authorRoute.post('/articles', verifyToken("AUTHOR"), checkAuthor, async (req, res) => {

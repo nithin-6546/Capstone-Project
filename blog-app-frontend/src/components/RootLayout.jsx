@@ -6,12 +6,9 @@ import { useAuth } from '../AuthStore/useAuth';
 
 function RootLayout() {
   // Extract both checkAuth and the loading state from the store
-  const { checkAuth, loading, currentUser } = useAuth();
+  const {  loading, currentUser } = useAuth();
 
-  useEffect(() => {
-    // Run the verification once on mount
-    checkAuth();
-  }, [checkAuth]);
+  
 
   // Prevent UI flickering: 
   // If we are currently checking the cookie but don't have a user yet, 
