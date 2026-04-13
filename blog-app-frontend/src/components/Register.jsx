@@ -14,6 +14,7 @@ function Register() {
   let navigate = useNavigate();
 
   let onFormSubmit = async (newUser) => {
+    console.log("BASE_URL:", import.meta.env.VITE_API_URL);
     setLoading(true); // ✅ add this
     const formData = new FormData();
     let { role, profileImageUrl, ...userObj } = newUser;
