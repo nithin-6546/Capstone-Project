@@ -113,7 +113,7 @@ useEffect(() => {
                     <div className="px-8 py-5 bg-gray-50/50 border-t border-gray-100 flex justify-between items-center">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={article.author?.profileImageUrl || `https://ui-avatars.com/api/?name=${article.author?.username || 'Author'}&background=2563eb&color=fff&bold=true`} 
+                          src={article.author?.profileImageUrl || `https://ui-avatars.com/api/?name=${article.author?.firstName || 'Author'}&background=2563eb&color=fff&bold=true`} 
                           className="w-8 h-8 rounded-full object-cover ring-2 ring-white shadow-sm" 
                           alt="author" 
                         />
