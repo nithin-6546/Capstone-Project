@@ -84,9 +84,10 @@ authorRoute.get('/articles/:authorId', verifyToken("AUTHOR"), checkAuthor, async
         // 2. Fetch: Use the Author ID to find matching articles
         // Ensure the field name 'author' matches your Article Schema
         const allArticles = await ArticleModel.find({ 
-            author: authorId
-        }).populate("author", "firstName lastName profileImageUrl");
-
+                            author: authorId
+                        })
+                        .populate("author", "firstName lastName profileImageUrl")
+                        .populate("comments.user", "firstName lastName profileImageUrl");
         // 3. Debugging: Check your Terminal/Console!
         console.log(`✅ Found ${allArticles.length} articles for Author ID: ${authorId}`);
 
