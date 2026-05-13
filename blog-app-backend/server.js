@@ -12,7 +12,7 @@ const app=exp()
 
 //use cors middleware
 app.use(cors({
-    origin: ['https://blogapp-indol-six.vercel.app','https://blogapp-9cdzt06r7-nithin-6546s-projects.vercel.app'
+    origin: ['https://blogapp-indol-six.vercel.app','https://blogapp-9cdzt06r7-nithin-6546s-projects.vercel.app', 'http://localhost:5173'
     ], //  frontend URL
     credentials: true, // Allow cookies to be sent
 }));
